@@ -27,6 +27,23 @@ function SelectRandomNumber(length) {
     return Math.trunc(Math.random() * length)
 }
 
+// function GetDrawNumber(){
+//     const firstDraw = new Date(2002, 11, 7, 20,40,0);
+//     // console.log(firstDraw.toString())
+//     // console.log(firstDraw.getTime())
+
+//     // console.log(Date.now())
+
+//     let elapsedTime = Date.now()-firstDraw.getTime()
+//     // console.log(elapsedTime* 0.001 /3600/24/7)
+//     // console.log(elapsedTime/604800000)
+//     // console.log(Math.trunc(elapsedTime/604800000)+1)
+
+//     let drawNum = Math.trunc(elapsedTime/604800000)+1
+
+//     return drawNum
+// }
+
 export default function Home() {
 
     useEffect(() => {
@@ -34,8 +51,8 @@ export default function Home() {
         window.exp.SelectRandomNumber = SelectRandomNumber
         window.exp.AutoPick = AutoPick
 
-        // Make a request for a user with a given ID
-        axios.get('https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=990')
+        // 1주일에 한번 날리기
+        axios.get('https://square-disk-826c.kirklayer6590.workers.dev')
             .then(function (response) {
                 // handle success
                 console.log(response);
@@ -56,6 +73,9 @@ export default function Home() {
         //     AutoPick()
         // }
         // console.timeEnd('test')
+
+        // const test = GetDrawNumber();
+        // console.log(test);
     }, [])
 
     return (
@@ -66,3 +86,7 @@ export default function Home() {
 }
 
 
+// let response = await fetch(request)
+// response = new Response(response.body, response)
+// response.headers.set('access-control-allow-origin', '*')
+// response.headers.set('access-control-allow-headers', '*')
