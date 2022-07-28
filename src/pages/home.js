@@ -63,7 +63,7 @@ export default function Home() {
                     // local storage 에 저장 ...
                     localStorage.setItem('data', JSON.stringify(data))
                     localStorage.setItem('drawNum', data.drwNo)
-                    localStorage.setItem('winNum', [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6, data.bnusNo])
+                    localStorage.setItem('winNum', JSON.stringify([data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6, data.bnusNo]))
 
                     // setState , 회차 , 숫자 
                     setDrawNum(localStorage.getItem('drawNum'))
@@ -80,14 +80,24 @@ export default function Home() {
             console.log('using localstorage data');
             // 여기서 get Item 한걸로 setstate ...
             setDrawNum(localStorage.getItem('drawNum'))
-            setWinNum(localStorage.getItem('winNum'))
+            setWinNum(JSON.parse(localStorage.getItem('winNum')))
+            console.log(JSON.parse(localStorage.getItem('winNum')));
+            // console.log();
         }
     }
 
     return (
         <div>
             <h1>{drawNum} 회</h1>
-            <div>당첨번호 {winNum}</div>
+            <div>
+                {
+                    winNum && winNum.map((v, i) => {
+                        return (
+                            <span style={{margin:"8px"}} key={i}>{v}</span>
+                        )
+                    })
+                }
+            </div>
         </div>
     )
 }
