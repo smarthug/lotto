@@ -1,5 +1,6 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import axios from 'axios'
+import { GetDrawNumber } from '../utils/time'
 
 //https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=990
 
@@ -27,66 +28,68 @@ function SelectRandomNumber(length) {
     return Math.trunc(Math.random() * length)
 }
 
-// function GetDrawNumber(){
-//     const firstDraw = new Date(2002, 11, 7, 20,40,0);
-//     // console.log(firstDraw.toString())
-//     // console.log(firstDraw.getTime())
 
-//     // console.log(Date.now())
-
-//     let elapsedTime = Date.now()-firstDraw.getTime()
-//     // console.log(elapsedTime* 0.001 /3600/24/7)
-//     // console.log(elapsedTime/604800000)
-//     // console.log(Math.trunc(elapsedTime/604800000)+1)
-
-//     let drawNum = Math.trunc(elapsedTime/604800000)+1
-
-//     return drawNum
-// }
 
 export default function Home() {
+    const [drawNum, setDrawNum] = useState();
+    const [winNum, setWinNum] = useState([]);
 
     useEffect(() => {
         window.exp = {}
         window.exp.SelectRandomNumber = SelectRandomNumber
         window.exp.AutoPick = AutoPick
 
-        // 1주일에 한번 날리기
-        axios.get('https://square-disk-826c.kirklayer6590.workers.dev')
-            .then(function (response) {
-                // handle success
-                console.log(response);
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            })
-            .then(function () {
-                // always executed
-            });
 
-        // 1000개 테스트
-        // console.time('test')
-        // for (let index = 0; index < 100000; index++) {
+        fetchWinNumbers()
 
-
-        //     AutoPick()
-        // }
-        // console.timeEnd('test')
-
-        // const test = GetDrawNumber();
-        // console.log(test);
     }, [])
+
+    function fetchWinNumbers() {
+
+        let prevDrawNumber = localStorage.getItem("drawNum") ?? 0;
+        console.log(prevDrawNumber)
+        let drawNum = GetDrawNumber()
+        console.log(drawNum)
+        // 로컬스토러지에 저장한 회자 번호와 , getdrawnumber 로 나온 번호가 다를시 
+        // 1주일에 한번 날리기
+        // string 1025 랑 숫자 1025 랑 다르구나 
+        if (prevDrawNumber !== `${drawNum}`) {
+
+            axios.get('https://square-disk-826c.kirklayer6590.workers.dev')
+                .then(function (response) {
+                    // handle success
+                    console.log(response);
+                    const data = response.data
+                    // local storage 에 저장 ...
+                    localStorage.setItem('data', JSON.stringify(data))
+                    localStorage.setItem('drawNum', data.drwNo)
+                    localStorage.setItem('winNum', [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6, data.bnusNo])
+
+                    // setState , 회차 , 숫자 
+                    setDrawNum(localStorage.getItem('drawNum'))
+                    setWinNum(localStorage.getItem('winNum'))
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .then(function () {
+                    // always executed
+                });
+        } else {
+            console.log('using localstorage data');
+            // 여기서 get Item 한걸로 setstate ...
+            setDrawNum(localStorage.getItem('drawNum'))
+            setWinNum(localStorage.getItem('winNum'))
+        }
+    }
 
     return (
         <div>
-            Home
+            <h1>{drawNum} 회</h1>
+            <div>당첨번호 {winNum}</div>
         </div>
     )
 }
 
 
-// let response = await fetch(request)
-// response = new Response(response.body, response)
-// response.headers.set('access-control-allow-origin', '*')
-// response.headers.set('access-control-allow-headers', '*')
